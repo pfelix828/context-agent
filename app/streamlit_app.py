@@ -19,7 +19,6 @@ load_dotenv(PROJECT_ROOT / ".env")
 import streamlit as st
 from src.agent import create_agent
 from src.context_loader import load_context, load_skills, list_teams
-from src.executor import get_schema_summary
 
 
 st.set_page_config(
@@ -111,11 +110,13 @@ def render_sidebar():
         st.sidebar.markdown(f"- {display_name}")
     st.sidebar.divider()
 
-    # Database info
-    st.sidebar.subheader("🗄️ Database")
-    schema = get_schema_summary()
-    for line in schema.split("\n"):
-        st.sidebar.markdown(line, unsafe_allow_html=True)
+    # Data sources
+    st.sidebar.subheader("📁 Available Data")
+    st.sidebar.markdown("- Accounts & Segments")
+    st.sidebar.markdown("- Leads & Funnel Stages")
+    st.sidebar.markdown("- Campaigns & Attribution")
+    st.sidebar.markdown("- Opportunities & Pipeline")
+    st.sidebar.markdown("- Product Usage")
     st.sidebar.divider()
 
     # Reset button
