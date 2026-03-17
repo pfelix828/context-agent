@@ -1,6 +1,6 @@
 # Context Agent
 
-An AI-powered data analyst that adapts to the stakeholder asking the question. Instead of generic "chat with your data" responses, Context Agent reads stakeholder profiles, domain knowledge, and analysis skills to deliver tailored, actionable insights.
+An AI-powered data scientist that adapts to the stakeholder asking the question. Instead of generic "chat with your data" responses, Context Agent reads stakeholder profiles, domain knowledge, and analysis skills to deliver tailored, actionable insights.
 
 ## The Idea
 
