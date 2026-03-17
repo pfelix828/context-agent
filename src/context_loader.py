@@ -11,6 +11,7 @@ from pathlib import Path
 
 PROJECT_ROOT = Path(__file__).parent.parent
 CONTEXT_DIR = PROJECT_ROOT / "context"
+STAKEHOLDERS_DIR = CONTEXT_DIR / "stakeholders"
 SKILLS_DIR = PROJECT_ROOT / "skills"
 
 
@@ -21,11 +22,28 @@ def load_file(path: Path) -> str:
     return ""
 
 
-def load_context() -> dict[str, str]:
-    """Load all context files into a dictionary."""
+def list_teams() -> list[str]:
+    """Return available team names from the stakeholders directory."""
+    if not STAKEHOLDERS_DIR.exists():
+        return []
+    return sorted(f.stem.title() for f in STAKEHOLDERS_DIR.glob("*.md"))
+
+
+def load_context(team: str | None = None) -> dict[str, str]:
+    """Load all context files into a dictionary, using team-specific stakeholder."""
     context = {}
     for file in sorted(CONTEXT_DIR.glob("*.md")):
+        # Skip the old single stakeholder.md — we use team profiles now
+        if file.stem == "stakeholder":
+            continue
         context[file.stem] = load_file(file)
+
+    # Load team-specific stakeholder profile
+    if team:
+        team_file = STAKEHOLDERS_DIR / f"{team.lower()}.md"
+        if team_file.exists():
+            context["stakeholder"] = load_file(team_file)
+
     return context
 
 

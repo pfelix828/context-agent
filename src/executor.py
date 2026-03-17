@@ -60,22 +60,39 @@ def execute_sql(query: str) -> str:
         con.close()
 
 
+def _query_via_duckdb(query: str) -> pd.DataFrame:
+    """Helper for Python code to query DuckDB and get a DataFrame."""
+    con = get_connection()
+    try:
+        return con.execute(query).fetchdf()
+    finally:
+        con.close()
+
+
 def execute_python(code: str) -> str:
     """
     Execute Python code with pandas and duckdb available.
     Captures printed output and the last expression's value.
+    Uses a safe helper function instead of raw DuckDB connections
+    to avoid fork issues in Streamlit's threaded environment.
     """
-    con = get_connection()
+    import numpy as np
+
     local_vars = {
         "pd": pd,
-        "duckdb": duckdb,
-        "con": con,
+        "np": np,
+        "query": _query_via_duckdb,
     }
+
+    # Use a restricted builtins to prevent subprocess/os access
+    safe_builtins = {k: v for k, v in __builtins__.__dict__.items()
+                     if k not in ("__import__", "exec", "eval", "compile", "open")}
+    safe_builtins["__import__"] = _safe_import
 
     stdout = io.StringIO()
     try:
         with redirect_stdout(stdout):
-            exec(code, {"__builtins__": __builtins__}, local_vars)
+            exec(code, {"__builtins__": safe_builtins}, local_vars)
         output = stdout.getvalue()
         if not output and "result" in local_vars:
             result = local_vars["result"]
@@ -86,8 +103,15 @@ def execute_python(code: str) -> str:
         return output if output else "Code executed successfully (no output)."
     except Exception as e:
         return f"Python Error: {e}"
-    finally:
-        con.close()
+
+
+def _safe_import(name, *args, **kwargs):
+    """Only allow importing safe data analysis packages."""
+    allowed = {"math", "statistics", "collections", "itertools", "functools",
+               "datetime", "json", "re", "decimal", "fractions"}
+    if name in allowed:
+        return __import__(name, *args, **kwargs)
+    raise ImportError(f"Import of '{name}' is not allowed. Use pd, np, or query() instead.")
 
 
 def run_code_blocks(blocks: list[dict]) -> list[dict]:

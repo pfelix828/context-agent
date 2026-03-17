@@ -55,21 +55,22 @@ TOOLS = [
 ]
 
 
-def create_agent():
-    """Initialize the agent with context and return it."""
+def create_agent(team: str | None = None):
+    """Initialize the agent with context for a specific team."""
     client = anthropic.Anthropic()
-    context = load_context()
+    context = load_context(team=team)
     skills = load_skills()
     schema_summary = get_schema_summary()
     system_prompt = build_system_prompt(context, skills, schema_summary)
 
-    return Agent(client, system_prompt)
+    return Agent(client, system_prompt, team=team)
 
 
 class Agent:
-    def __init__(self, client: anthropic.Anthropic, system_prompt: str):
+    def __init__(self, client: anthropic.Anthropic, system_prompt: str, team: str | None = None):
         self.client = client
         self.system_prompt = system_prompt
+        self.team = team
         self.conversation: list[dict] = []
 
     def ask(self, question: str) -> str:
