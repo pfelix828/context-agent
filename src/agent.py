@@ -37,8 +37,8 @@ TOOLS = [
         "name": "run_python",
         "description": (
             "Execute Python code for calculations or data transformations. "
-            "pandas (as pd) and duckdb are available. "
-            "Use `con` for an active DuckDB connection. "
+            "pandas (as pd), numpy (as np), and a query() function are available. "
+            "Use query('SELECT ...') to run SQL and get a pandas DataFrame. "
             "Print output or assign to a variable named `result`."
         ),
         "input_schema": {
