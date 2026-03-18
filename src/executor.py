@@ -85,7 +85,8 @@ def execute_python(code: str) -> str:
     }
 
     # Use a restricted builtins to prevent subprocess/os access
-    safe_builtins = {k: v for k, v in __builtins__.__dict__.items()
+    builtins_dict = __builtins__ if isinstance(__builtins__, dict) else __builtins__.__dict__
+    safe_builtins = {k: v for k, v in builtins_dict.items()
                      if k not in ("__import__", "exec", "eval", "compile", "open")}
     safe_builtins["__import__"] = _safe_import
 
