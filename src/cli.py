@@ -27,7 +27,7 @@ def main():
 
         print("\nAnalyzing...\n")
         response = agent.ask(question)
-        print(f"\n{response}\n")
+        print(f"\n{response.text}\n")
         print("-" * 40 + "\n")
 
 

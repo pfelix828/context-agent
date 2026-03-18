@@ -1,0 +1,9 @@
+[project]
+name = "context-agent"
+version = "1.0.0"
+description = "AI-powered data analyst that adapts to the stakeholder asking the question"
+requires-python = ">=3.12"
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["."]

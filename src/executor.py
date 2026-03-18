@@ -7,13 +7,22 @@ and returns results as formatted strings.
 
 import re
 import io
+import json
 import duckdb
 import pandas as pd
+from dataclasses import dataclass, field
 from pathlib import Path
 from contextlib import redirect_stdout
 
 
 DB_PATH = Path(__file__).parent.parent / "data" / "gtm.duckdb"
+
+
+@dataclass
+class ExecutionResult:
+    """Result from executing a code block, with optional Plotly figures."""
+    text: str
+    figures: list[str] = field(default_factory=list)  # Plotly figure JSON strings
 
 
 def get_connection() -> duckdb.DuckDBPyConnection:
@@ -69,18 +78,23 @@ def _query_via_duckdb(query: str) -> pd.DataFrame:
         con.close()
 
 
-def execute_python(code: str) -> str:
+def execute_python(code: str) -> ExecutionResult:
     """
-    Execute Python code with pandas and duckdb available.
-    Captures printed output and the last expression's value.
+    Execute Python code with pandas, numpy, and plotly available.
+    Captures printed output, the last expression's value, and any Plotly figures.
     Uses a safe helper function instead of raw DuckDB connections
     to avoid fork issues in Streamlit's threaded environment.
     """
     import numpy as np
+    import plotly.express as px
+    import plotly.graph_objects as go
+    import plotly.io as pio
 
     local_vars = {
         "pd": pd,
         "np": np,
+        "px": px,
+        "go": go,
         "query": _query_via_duckdb,
     }
 
@@ -99,20 +113,29 @@ def execute_python(code: str) -> str:
             result = local_vars["result"]
             if isinstance(result, pd.DataFrame):
                 output = result.to_markdown(index=False)
-            else:
+            elif not isinstance(result, go.Figure):
                 output = str(result)
-        return output if output else "Code executed successfully (no output)."
+
+        # Collect any Plotly figures from local variables
+        figures = []
+        for var_name, var_val in local_vars.items():
+            if isinstance(var_val, go.Figure):
+                figures.append(pio.to_json(var_val))
+
+        text = output if output else "Code executed successfully (no output)."
+        return ExecutionResult(text=text, figures=figures)
     except Exception as e:
-        return f"Python Error: {e}"
+        return ExecutionResult(text=f"Python Error: {e}")
 
 
 def _safe_import(name, *args, **kwargs):
     """Only allow importing safe data analysis packages."""
     allowed = {"math", "statistics", "collections", "itertools", "functools",
-               "datetime", "json", "re", "decimal", "fractions"}
+               "datetime", "json", "re", "decimal", "fractions",
+               "plotly", "plotly.express", "plotly.graph_objects", "plotly.io"}
     if name in allowed:
         return __import__(name, *args, **kwargs)
-    raise ImportError(f"Import of '{name}' is not allowed. Use pd, np, or query() instead.")
+    raise ImportError(f"Import of '{name}' is not allowed. Use pd, np, px, go, or query() instead.")
 
 
 def run_code_blocks(blocks: list[dict]) -> list[dict]:
