@@ -1,6 +1,6 @@
-# Context Agent
+# Adaptive Analyst Agent
 
-An AI-powered data scientist that adapts to the stakeholder asking the question. Instead of generic "chat with your data" responses, Context Agent reads stakeholder profiles, domain knowledge, and analysis skills to deliver tailored, actionable insights.
+An AI-powered data scientist that adapts to the stakeholder asking the question. Instead of generic "chat with your data" responses, Adaptive Analyst Agent reads stakeholder profiles, domain knowledge, and analysis skills to deliver tailored, actionable insights.
 
 ## Features
 
@@ -13,7 +13,7 @@ An AI-powered data scientist that adapts to the stakeholder asking the question.
 
 ## The Idea
 
-Data teams answer the same questions differently depending on who's asking. A VP of Marketing wants pipeline impact and budget recommendations. An executive wants ARR and bookings vs plan. A product manager wants engagement trends and retention curves. Context Agent makes this adaptation automatic by loading a configurable context layer before every interaction.
+Data teams answer the same questions differently depending on who's asking. A VP of Marketing wants pipeline impact and budget recommendations. An executive wants ARR and bookings vs plan. A product manager wants engagement trends and retention curves. Adaptive Analyst Agent makes this adaptation automatic by loading a configurable context layer before every interaction.
 
 ## How It Works
 
