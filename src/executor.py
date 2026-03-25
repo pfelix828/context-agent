@@ -5,7 +5,6 @@ Parses code blocks from the agent's response, runs them,
 and returns results as formatted strings.
 """
 
-import re
 import io
 import json
 import duckdb
@@ -42,16 +41,6 @@ def get_schema_summary() -> str:
         lines.append(f"- **{table}** ({count:,} rows): {col_list}")
     con.close()
     return "\n".join(lines)
-
-
-def extract_code_blocks(text: str) -> list[dict]:
-    """
-    Extract executable code blocks from the agent's response.
-    Looks for ```sql [EXECUTE] or ```python [EXECUTE] blocks.
-    """
-    pattern = r"```(sql|python)\s*\[EXECUTE\]\s*\n(.*?)```"
-    matches = re.findall(pattern, text, re.DOTALL | re.IGNORECASE)
-    return [{"language": lang.lower(), "code": code.strip()} for lang, code in matches]
 
 
 def execute_sql(query: str) -> str:
@@ -138,20 +127,3 @@ def _safe_import(name, *args, **kwargs):
     raise ImportError(f"Import of '{name}' is not allowed. Use pd, np, px, go, or query() instead.")
 
 
-def run_code_blocks(blocks: list[dict]) -> list[dict]:
-    """Execute a list of code blocks and return results."""
-    results = []
-    for block in blocks:
-        if block["language"] == "sql":
-            output = execute_sql(block["code"])
-        elif block["language"] == "python":
-            output = execute_python(block["code"])
-        else:
-            output = f"Unsupported language: {block['language']}"
-
-        results.append({
-            "language": block["language"],
-            "code": block["code"],
-            "output": output,
-        })
-    return results

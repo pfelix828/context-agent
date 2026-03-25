@@ -43,10 +43,9 @@ class TestLoadContext:
         context = load_context(team="Nonexistent")
         assert "stakeholder" not in context
 
-    def test_skips_old_stakeholder_file(self):
-        # The old stakeholder.md should not be loaded as a key
+    def test_no_stakeholder_without_team(self):
+        # Loading without a team returns no stakeholder context
         context = load_context()
-        # It should not appear as its own key (it's skipped in the loader)
         assert "stakeholder" not in context
 
 

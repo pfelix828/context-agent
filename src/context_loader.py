@@ -33,9 +33,6 @@ def load_context(team: str | None = None) -> dict[str, str]:
     """Load all context files into a dictionary, using team-specific stakeholder."""
     context = {}
     for file in sorted(CONTEXT_DIR.glob("*.md")):
-        # Skip the old single stakeholder.md — we use team profiles now
-        if file.stem == "stakeholder":
-            continue
         context[file.stem] = load_file(file)
 
     # Load team-specific stakeholder profile
