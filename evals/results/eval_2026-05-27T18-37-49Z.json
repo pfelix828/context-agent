@@ -1,0 +1,239 @@
+{
+  "timestamp_utc": "2026-05-27T18:37:49.214182+00:00",
+  "n_questions": 20,
+  "n_pass": 20,
+  "pass_rate": 1.0,
+  "total_latency_s": 89.15208495799743,
+  "by_category": {
+    "simple_count": {
+      "pass": 4,
+      "total": 4
+    },
+    "aggregation": {
+      "pass": 4,
+      "total": 4
+    },
+    "rate": {
+      "pass": 3,
+      "total": 3
+    },
+    "join": {
+      "pass": 3,
+      "total": 3
+    },
+    "time": {
+      "pass": 2,
+      "total": 2
+    },
+    "ranking": {
+      "pass": 2,
+      "total": 2
+    },
+    "multi_step": {
+      "pass": 2,
+      "total": 2
+    }
+  },
+  "results": [
+    {
+      "id": "count_accounts_smb",
+      "category": "simple_count",
+      "passed": true,
+      "expected": 900,
+      "observed": 900.0,
+      "raw_answer_tag": "900",
+      "error": null,
+      "latency_s": 2.981723625001905
+    },
+    {
+      "id": "count_enterprise_customers",
+      "category": "simple_count",
+      "passed": true,
+      "expected": 119,
+      "observed": 119.0,
+      "raw_answer_tag": "119",
+      "error": null,
+      "latency_s": 3.028480666998803
+    },
+    {
+      "id": "count_campaigns_outbound",
+      "category": "simple_count",
+      "passed": true,
+      "expected": 6,
+      "observed": 6.0,
+      "raw_answer_tag": "6",
+      "error": null,
+      "latency_s": 2.9360397499985993
+    },
+    {
+      "id": "count_leads_from_paid_search",
+      "category": "simple_count",
+      "passed": true,
+      "expected": 1541,
+      "observed": 1541.0,
+      "raw_answer_tag": "1541",
+      "error": null,
+      "latency_s": 2.54007941600139
+    },
+    {
+      "id": "total_arr_all_customers",
+      "category": "aggregation",
+      "passed": true,
+      "expected": 21225400.0,
+      "observed": 21225400.0,
+      "raw_answer_tag": "21225400.0",
+      "error": null,
+      "latency_s": 8.261065665999922
+    },
+    {
+      "id": "avg_employee_count_midmarket",
+      "category": "aggregation",
+      "passed": true,
+      "expected": 1098.8757142857144,
+      "observed": 1098.88,
+      "raw_answer_tag": "1098.88",
+      "error": null,
+      "latency_s": 2.5823895419998735
+    },
+    {
+      "id": "total_campaign_spend",
+      "category": "aggregation",
+      "passed": true,
+      "expected": 1815045.0600000003,
+      "observed": 1815045.06,
+      "raw_answer_tag": "1815045.06",
+      "error": null,
+      "latency_s": 8.424663334000797
+    },
+    {
+      "id": "count_opps_closed_won",
+      "category": "aggregation",
+      "passed": true,
+      "expected": 40,
+      "observed": 40.0,
+      "raw_answer_tag": "40",
+      "error": null,
+      "latency_s": 3.019080624999333
+    },
+    {
+      "id": "win_rate_overall",
+      "category": "rate",
+      "passed": true,
+      "expected": 36.36363636363637,
+      "observed": 36.36,
+      "raw_answer_tag": "36.36",
+      "error": null,
+      "latency_s": 4.605735084001935
+    },
+    {
+      "id": "mql_to_sql_conversion",
+      "category": "rate",
+      "passed": true,
+      "expected": 39.24731182795699,
+      "observed": 39.25,
+      "raw_answer_tag": "39.25",
+      "error": null,
+      "latency_s": 4.586020874998212
+    },
+    {
+      "id": "lead_to_opp_conversion",
+      "category": "rate",
+      "passed": true,
+      "expected": 1.975,
+      "observed": 1.98,
+      "raw_answer_tag": "1.98",
+      "error": null,
+      "latency_s": 6.20977991700056
+    },
+    {
+      "id": "avg_won_amount_enterprise",
+      "category": "join",
+      "passed": true,
+      "expected": 136900.0,
+      "observed": 136900.0,
+      "raw_answer_tag": "136900",
+      "error": null,
+      "latency_s": 3.567354916001932
+    },
+    {
+      "id": "won_amount_from_outbound_leads",
+      "category": "join",
+      "passed": true,
+      "expected": 317900.0,
+      "observed": 317900.0,
+      "raw_answer_tag": "317900",
+      "error": null,
+      "latency_s": 3.6153577500008396
+    },
+    {
+      "id": "count_opps_at_smb_accounts",
+      "category": "join",
+      "passed": true,
+      "expected": 15,
+      "observed": 15.0,
+      "raw_answer_tag": "15",
+      "error": null,
+      "latency_s": 3.5019478749964037
+    },
+    {
+      "id": "opps_closed_q3_2025",
+      "category": "time",
+      "passed": true,
+      "expected": 17,
+      "observed": 17.0,
+      "raw_answer_tag": "17",
+      "error": null,
+      "latency_s": 10.46008595800231
+    },
+    {
+      "id": "leads_created_jan_2025",
+      "category": "time",
+      "passed": true,
+      "expected": 571,
+      "observed": 571.0,
+      "raw_answer_tag": "571",
+      "error": null,
+      "latency_s": 3.4122938749969762
+    },
+    {
+      "id": "top_industry_account_count",
+      "category": "ranking",
+      "passed": true,
+      "expected": 221,
+      "observed": 221.0,
+      "raw_answer_tag": "221",
+      "error": null,
+      "latency_s": 3.0988124169998628
+    },
+    {
+      "id": "top_channel_total_spend",
+      "category": "ranking",
+      "passed": true,
+      "expected": 639586.75,
+      "observed": 639587.0,
+      "raw_answer_tag": "639587",
+      "error": null,
+      "latency_s": 3.0655344580009114
+    },
+    {
+      "id": "avg_dau_q4_2025",
+      "category": "multi_step",
+      "passed": true,
+      "expected": 1430.169110235499,
+      "observed": 1430.17,
+      "raw_answer_tag": "1430.17",
+      "error": null,
+      "latency_s": 5.625753874999646
+    },
+    {
+      "id": "enterprise_won_revenue_share",
+      "category": "multi_step",
+      "passed": true,
+      "expected": 72.62372839043874,
+      "observed": 72.6237,
+      "raw_answer_tag": "72.6237",
+      "error": null,
+      "latency_s": 3.629885332997219
+    }
+  ]
+}

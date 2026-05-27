@@ -1,0 +1,288 @@
+questions:
+- id: count_accounts_smb
+  category: simple_count
+  question: How many accounts are in the SMB segment? Report a single integer.
+  reference_sql: 'SELECT COUNT(*) FROM dim_accounts WHERE segment = ''SMB''
+
+    '
+  expected_answer: 900
+  tolerance:
+    type: exact
+- id: count_enterprise_customers
+  category: simple_count
+  question: How many Enterprise accounts are existing customers (is_customer = TRUE)? Report a single
+    integer.
+  reference_sql: 'SELECT COUNT(*) FROM dim_accounts
+
+    WHERE segment = ''Enterprise'' AND is_customer = TRUE
+
+    '
+  expected_answer: 119
+  tolerance:
+    type: exact
+- id: count_campaigns_outbound
+  category: simple_count
+  question: How many campaigns are in the 'outbound' channel? Report a single integer.
+  reference_sql: 'SELECT COUNT(*) FROM fct_campaigns WHERE channel = ''outbound''
+
+    '
+  expected_answer: 6
+  tolerance:
+    type: exact
+- id: count_leads_from_paid_search
+  category: simple_count
+  question: How many leads have lead_source = 'paid_search'? Report a single integer.
+  reference_sql: 'SELECT COUNT(*) FROM dim_leads WHERE lead_source = ''paid_search''
+
+    '
+  expected_answer: 1541
+  tolerance:
+    type: exact
+- id: total_arr_all_customers
+  category: aggregation
+  question: What is the total ARR (sum of arr) across all accounts where is_customer is TRUE? Report a
+    single number in dollars.
+  reference_sql: 'SELECT SUM(arr) FROM dim_accounts WHERE is_customer = TRUE
+
+    '
+  expected_answer: 21225400.0
+  tolerance:
+    type: rel
+    value: 0.01
+- id: avg_employee_count_midmarket
+  category: aggregation
+  question: What is the average employee count for Mid-Market accounts? Report a single number.
+  reference_sql: 'SELECT AVG(employee_count) FROM dim_accounts WHERE segment = ''Mid-Market''
+
+    '
+  expected_answer: 1098.8757142857144
+  tolerance:
+    type: rel
+    value: 0.01
+- id: total_campaign_spend
+  category: aggregation
+  question: What is the total spend summed across every row of fct_campaigns? Report a single number in
+    dollars.
+  reference_sql: 'SELECT SUM(spend) FROM fct_campaigns
+
+    '
+  expected_answer: 1815045.0600000003
+  tolerance:
+    type: rel
+    value: 0.01
+- id: count_opps_closed_won
+  category: aggregation
+  question: How many opportunities have is_won = TRUE? Report a single integer.
+  reference_sql: 'SELECT COUNT(*) FROM fct_opportunities WHERE is_won = TRUE
+
+    '
+  expected_answer: 40
+  tolerance:
+    type: exact
+- id: win_rate_overall
+  category: rate
+  question: 'Of opportunities that have closed (stage = ''Closed Won'' or stage = ''Closed Lost''),
+
+    what percent are Closed Won? Report a number between 0 and 100 (e.g., 42.5 for 42.5%).
+
+    '
+  reference_sql: 'SELECT 100.0 * SUM(CASE WHEN is_won THEN 1 ELSE 0 END) / COUNT(*)
+
+    FROM fct_opportunities
+
+    WHERE stage IN (''Closed Won'', ''Closed Lost'')
+
+    '
+  expected_answer: 36.36363636363637
+  tolerance:
+    type: abs
+    value: 0.5
+- id: mql_to_sql_conversion
+  category: rate
+  question: 'Of leads that reached MQL (mql_at IS NOT NULL), what percent also reached SQL
+
+    (sql_at IS NOT NULL)? Report a number between 0 and 100.
+
+    '
+  reference_sql: 'SELECT 100.0 * SUM(CASE WHEN sql_at IS NOT NULL THEN 1 ELSE 0 END) / COUNT(*)
+
+    FROM dim_leads
+
+    WHERE mql_at IS NOT NULL
+
+    '
+  expected_answer: 39.24731182795699
+  tolerance:
+    type: abs
+    value: 0.5
+- id: lead_to_opp_conversion
+  category: rate
+  question: 'What percent of all leads in dim_leads are linked to at least one row in
+
+    fct_opportunities (matched on lead_id)? Report a number between 0 and 100.
+
+    '
+  reference_sql: 'SELECT 100.0 * COUNT(DISTINCT o.lead_id) / (SELECT COUNT(*) FROM dim_leads)
+
+    FROM fct_opportunities o
+
+    WHERE o.lead_id IS NOT NULL
+
+    '
+  expected_answer: 1.975
+  tolerance:
+    type: abs
+    value: 0.5
+- id: avg_won_amount_enterprise
+  category: join
+  question: 'For opportunities with is_won = TRUE belonging to accounts where segment = ''Enterprise'',
+
+    what is the average opportunity amount? Report a single number in dollars.
+
+    '
+  reference_sql: 'SELECT AVG(o.amount)
+
+    FROM fct_opportunities o
+
+    JOIN dim_accounts a ON o.account_id = a.account_id
+
+    WHERE o.is_won = TRUE AND a.segment = ''Enterprise''
+
+    '
+  expected_answer: 136900.0
+  tolerance:
+    type: rel
+    value: 0.02
+- id: won_amount_from_outbound_leads
+  category: join
+  question: 'Sum the opportunity amount for opportunities with is_won = TRUE whose lead
+
+    (joined via lead_id) has lead_source = ''outbound''. Report a single number in dollars.
+
+    '
+  reference_sql: 'SELECT SUM(o.amount)
+
+    FROM fct_opportunities o
+
+    JOIN dim_leads l ON o.lead_id = l.lead_id
+
+    WHERE o.is_won = TRUE AND l.lead_source = ''outbound''
+
+    '
+  expected_answer: 317900.0
+  tolerance:
+    type: rel
+    value: 0.02
+- id: count_opps_at_smb_accounts
+  category: join
+  question: 'How many rows in fct_opportunities belong to accounts where segment = ''SMB''?
+
+    Report a single integer.
+
+    '
+  reference_sql: 'SELECT COUNT(*)
+
+    FROM fct_opportunities o
+
+    JOIN dim_accounts a ON o.account_id = a.account_id
+
+    WHERE a.segment = ''SMB''
+
+    '
+  expected_answer: 15
+  tolerance:
+    type: exact
+- id: opps_closed_q3_2025
+  category: time
+  question: 'How many opportunities have close_date between 2025-07-01 and 2025-09-30 inclusive
+
+    AND stage in (''Closed Won'', ''Closed Lost'')? Report a single integer.
+
+    '
+  reference_sql: "SELECT COUNT(*)\nFROM fct_opportunities\nWHERE close_date BETWEEN '2025-07-01' AND '2025-09-30'\n\
+    \  AND stage IN ('Closed Won', 'Closed Lost')\n"
+  expected_answer: 17
+  tolerance:
+    type: exact
+- id: leads_created_jan_2025
+  category: time
+  question: 'How many leads have created_at in January 2025 (2025-01-01 through 2025-01-31 inclusive)?
+
+    Report a single integer.
+
+    '
+  reference_sql: 'SELECT COUNT(*)
+
+    FROM dim_leads
+
+    WHERE created_at >= ''2025-01-01'' AND created_at < ''2025-02-01''
+
+    '
+  expected_answer: 571
+  tolerance:
+    type: exact
+- id: top_industry_account_count
+  category: ranking
+  question: 'Which industry has the most accounts in dim_accounts? Report only the count of
+
+    accounts in that top industry, as a single integer.
+
+    '
+  reference_sql: 'SELECT COUNT(*) AS n FROM dim_accounts
+
+    GROUP BY industry ORDER BY n DESC LIMIT 1
+
+    '
+  expected_answer: 221
+  tolerance:
+    type: exact
+- id: top_channel_total_spend
+  category: ranking
+  question: 'Across all campaigns in fct_campaigns, which channel has the highest total spend?
+
+    Report only the total spend of that top channel, as a single number in dollars.
+
+    '
+  reference_sql: 'SELECT SUM(spend) AS s FROM fct_campaigns
+
+    GROUP BY channel ORDER BY s DESC LIMIT 1
+
+    '
+  expected_answer: 639586.75
+  tolerance:
+    type: rel
+    value: 0.02
+- id: avg_dau_q4_2025
+  category: multi_step
+  question: 'Across rows in fct_product_usage with usage_date between 2025-10-01 and 2025-12-31
+
+    inclusive, what is the average dau value? Report a single number.
+
+    '
+  reference_sql: 'SELECT AVG(dau)
+
+    FROM fct_product_usage
+
+    WHERE usage_date BETWEEN ''2025-10-01'' AND ''2025-12-31''
+
+    '
+  expected_answer: 1430.169110235499
+  tolerance:
+    type: rel
+    value: 0.01
+- id: enterprise_won_revenue_share
+  category: multi_step
+  question: 'Of the total amount summed across all is_won = TRUE opportunities, what percent
+
+    comes from opportunities whose account segment is ''Enterprise''?
+
+    Report a number between 0 and 100.
+
+    '
+  reference_sql: "SELECT 100.0 *\n  SUM(CASE WHEN a.segment = 'Enterprise' THEN o.amount ELSE 0 END) /\n\
+    \  SUM(o.amount)\nFROM fct_opportunities o\nJOIN dim_accounts a ON o.account_id = a.account_id\nWHERE\
+    \ o.is_won = TRUE\n"
+  expected_answer: 72.62372839043874
+  tolerance:
+    type: abs
+    value: 1.0

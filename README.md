@@ -82,12 +82,69 @@ streamlit run app/streamlit_app.py
 pytest tests/ -v
 ```
 
+## Evaluation
+
+The `evals/` directory contains two evaluation sets that score the agent
+on complementary dimensions.
+
+**Gold set (20 questions, deterministic).** Well-specified questions
+across counts, aggregations, conversion rates, joins, time filters,
+ranking, and multi-step analysis. Each has a reference SQL whose result
+against the live DuckDB is the canonical answer; the agent's response is
+parsed, the numeric value extracted, and compared with a per-question
+tolerance.
+
+**Adversarial set (12 questions, LLM-judged).** Designed to surface
+behavioral failure modes: hallucinated answers when data is missing,
+single-answer responses to ambiguous metrics, subtle SQL traps where the
+obvious approach is wrong, distinct-count errors, date-boundary
+ambiguity, and leading questions with false premises. A Haiku judge
+scores each response against a PASS/FAIL rubric; SQL-trap questions also
+carry a deterministic numeric check.
+
+**Latest run (Sonnet 4.6 agent, Haiku 4.5 judge):**
+
+| Set         | Pass rate    | Notes                                            |
+|-------------|--------------|--------------------------------------------------|
+| Gold        | 20/20 (100%) | Correct SQL on every well-specified question.    |
+| Adversarial | 7/12 (58%)   | SQL traps handled; refusal / disambiguation are real failure modes. |
+
+The adversarial breakdown matters more than the headline: the agent
+passed all three SQL traps and the leading-question check, but failed to
+refuse cleanly on "churn rate" and "subscription tiers" (fabricated
+proxies without flagging the substitution), and did not explicitly
+disambiguate date conventions or pipeline-stage filters. See
+[evals/README.md](evals/README.md) for failure-mode details and how to
+read the results JSON.
+
+```bash
+python evals/build_gold.py                    # refresh expected answers
+python evals/run_eval.py                      # run both sets
+python evals/run_eval.py --set gold           # gold only
+python evals/run_eval.py --set adversarial    # adversarial only
+```
+
+```bash
+# Refresh expected answers from the live DB
+python evals/build_gold.py
+
+# Run all 20 questions (≈20 Claude API calls)
+python evals/run_eval.py
+
+# Or scope down while iterating
+python evals/run_eval.py --limit 3
+python evals/run_eval.py --ids win_rate_overall,top_industry_account_count
+```
+
+See [evals/README.md](evals/README.md) for scoring details and failure-mode
+notes.
+
 ## Sample Dataset
 
 The included data generator creates a realistic B2B SaaS GTM dataset with:
 - **2,000 accounts** across SMB, Mid-Market, and Enterprise segments
 - **8,000 leads** with full funnel progression (Lead → MQL → SQL → Opportunity → Closed)
-- **45 campaigns** across 6 channels with budget and spend tracking
+- **36 campaigns** across 6 channels with budget and spend tracking
 - **17,000 multi-touch attribution records**
 - **100K+ daily product usage records**
 
