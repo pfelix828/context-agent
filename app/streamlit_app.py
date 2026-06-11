@@ -2,14 +2,33 @@
 Streamlit UI for the Context-Aware Data Analysis Agent.
 """
 
+# === macOS fork crash prevention (must run before ALL other imports) ===
+# On macOS 26+, fork() crashes when the Network framework is loaded in a
+# multi-threaded process.  The Network framework gets pulled in by Python's
+# _scproxy module (system proxy detection).  Mocking _scproxy before any
+# networking imports prevents the framework from loading at all.
 import os
 import sys
+import types
+
+if sys.platform == "darwin":
+    os.environ["OBJC_DISABLE_INITIALIZE_FORK_SAFETY"] = "YES"
+    os.environ["no_proxy"] = "*"
+
+    _fake = types.ModuleType("_scproxy")
+    _fake._get_proxy_settings = lambda: {}
+    _fake._get_proxies = lambda: {}
+    sys.modules["_scproxy"] = _fake
+
+    import multiprocessing
+    try:
+        multiprocessing.set_start_method("spawn")
+    except RuntimeError:
+        pass  # already set
+
 import json
 import time
 from pathlib import Path
-
-# Fix macOS fork crash with multi-threaded processes (DuckDB + Streamlit)
-os.environ["OBJC_DISABLE_INITIALIZE_FORK_SAFETY"] = "YES"
 
 # Add project root to path
 PROJECT_ROOT = Path(__file__).parent.parent
@@ -21,7 +40,7 @@ load_dotenv(PROJECT_ROOT / ".env")
 import streamlit as st
 import plotly.io as pio
 
-from src.agent import create_agent, TextDelta, ToolStart, ToolResult, StreamComplete
+from src.agent import create_agent
 from src.context_loader import load_context, load_skills, list_teams
 
 
@@ -202,58 +221,22 @@ def render_figures(figures: list[str]):
         st.plotly_chart(fig, use_container_width=True)
 
 
-def stream_response(agent, prompt: str) -> dict:
-    """Stream an agent response with live text and tool status indicators."""
+def get_response(agent, prompt: str) -> dict:
+    """Get an agent response with a spinner and render results."""
     start_time = time.time()
-    text_placeholder = st.empty()
-    accumulated_text = ""
-    all_figures = []
-    final_response = None
-    active_status = None
 
-    for event in agent.ask_stream(prompt):
-        if isinstance(event, TextDelta):
-            accumulated_text += event.text
-            text_placeholder.markdown(accumulated_text + "▌")
+    with st.spinner("Analyzing..."):
+        response = agent.ask(prompt)
 
-        elif isinstance(event, ToolStart):
-            tool_label = {
-                "run_sql": "Running SQL query...",
-                "run_python": "Executing Python...",
-            }.get(event.tool_name, f"Running {event.tool_name}...")
-
-            active_status = st.status(tool_label, expanded=False)
-            if event.tool_name == "run_sql":
-                active_status.code(event.tool_input.get("query", ""), language="sql")
-            elif event.tool_name == "run_python":
-                active_status.code(event.tool_input.get("code", ""), language="python")
-
-        elif isinstance(event, ToolResult):
-            if event.figures:
-                all_figures.extend(event.figures)
-            if active_status:
-                active_status.update(label=f"{event.tool_name} complete", state="complete")
-                active_status = None
-
-        elif isinstance(event, StreamComplete):
-            final_response = event.response
-            all_figures = final_response.figures
-
-    # Render final text (remove cursor)
-    if accumulated_text:
-        text_placeholder.markdown(accumulated_text)
-
-    # Render any figures
-    render_figures(all_figures)
+    st.markdown(response.text)
+    render_figures(response.figures)
 
     elapsed = time.time() - start_time
-
-    # Response metadata footer
     st.caption(f"Response time: {elapsed:.1f}s")
 
     return {
-        "text": accumulated_text,
-        "figures": all_figures,
+        "text": response.text,
+        "figures": response.figures,
     }
 
 
@@ -308,10 +291,10 @@ def main():
         with st.chat_message("user"):
             st.markdown(prompt)
 
-        # Get agent response with streaming
+        # Get agent response
         with st.chat_message("assistant"):
             try:
-                result = stream_response(agent, prompt)
+                result = get_response(agent, prompt)
             except Exception as e:
                 error_name = type(e).__name__
                 if "RateLimitError" in error_name:

@@ -4,4 +4,7 @@ __pycache__/
 .venv/
 data/*.duckdb
 data/*.duckdb.wal
+# The demo database ships with the repo so the deployed app and the recorded
+# demo sessions are computed against byte-identical data.
+!data/gtm.duckdb
 .streamlit/secrets.toml

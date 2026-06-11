@@ -13,7 +13,7 @@ from .context_loader import load_context, load_skills, build_system_prompt
 from .executor import get_schema_summary, execute_sql, execute_python
 
 
-MODEL = "claude-sonnet-4-20250514"
+MODEL = "claude-sonnet-4-6"
 MAX_ITERATIONS = 10
 
 
