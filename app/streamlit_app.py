@@ -45,7 +45,7 @@ from src.context_loader import load_context, load_skills, list_teams
 
 
 st.set_page_config(
-    page_title="Context Agent",
+    page_title="Adaptive Analyst Agent",
     page_icon="📊",
     layout="wide",
 )
@@ -86,6 +86,57 @@ SAMPLE_QUESTIONS = {
 }
 
 
+# --- Demo-mode recordings and live-mode usage caps ---
+
+SESSIONS_DIR = PROJECT_ROOT / "demo_sessions"
+LIVE_QUESTIONS_PER_SESSION = 3   # per browser session
+LIVE_QUESTIONS_PER_DAY = 20      # global, resets on app restart or new day
+LIVE_INPUT_MAX_CHARS = 300
+
+TEAM_ORDER = ["Executive", "Marketing", "Sales", "Product"]
+
+
+@st.cache_data
+def load_demo_sessions() -> dict[str, list[dict]]:
+    """Load recorded real-agent transcripts, grouped by team."""
+    sessions: dict[str, list[dict]] = {}
+    for path in sorted(SESSIONS_DIR.glob("*.json")):
+        s = json.loads(path.read_text())
+        sessions.setdefault(s["team"], []).append(s)
+    return sessions
+
+
+@st.cache_resource
+def _daily_usage():
+    """Global live-question counter shared across visitor sessions.
+
+    In-memory only: it resets when the app restarts, which is acceptable —
+    the per-session cap is the primary guard, this is the backstop.
+    """
+    import threading
+
+    return {"date": None, "count": 0, "lock": threading.Lock()}
+
+
+def _live_budget_left() -> bool:
+    """True if the global daily live-question budget has room."""
+    import datetime
+
+    usage = _daily_usage()
+    today = datetime.date.today().isoformat()
+    with usage["lock"]:
+        if usage["date"] != today:
+            usage["date"] = today
+            usage["count"] = 0
+        return usage["count"] < LIVE_QUESTIONS_PER_DAY
+
+
+def _count_live_question() -> None:
+    usage = _daily_usage()
+    with usage["lock"]:
+        usage["count"] += 1
+
+
 def _get_api_key() -> str | None:
     """Get API key from environment, secrets, or sidebar input."""
     # Check environment variable first (local dev)
@@ -115,13 +166,23 @@ def get_or_create_agent(team: str):
 
 
 def render_sidebar():
-    """Render the sidebar with team selector and context info."""
-    st.sidebar.title("📊 Context Agent")
+    """Render the sidebar with mode switch, team selector, and context info."""
+    st.sidebar.title("📊 Adaptive Analyst Agent")
     st.sidebar.markdown("*AI-powered data analyst that adapts to the team*")
     st.sidebar.divider()
 
-    # API key input if not set via environment
-    if not os.environ.get("ANTHROPIC_API_KEY"):
+    mode = st.sidebar.radio(
+        "Mode",
+        ["Watch recorded sessions", "Ask live questions"],
+        captions=[
+            "Real agent runs, captured and replayed. Instant, free.",
+            f"The agent answers you live. Limited to {LIVE_QUESTIONS_PER_SESSION} questions per visit.",
+        ],
+    )
+    st.sidebar.divider()
+
+    # API key input only matters in live mode, and only when no key is configured
+    if mode == "Ask live questions" and not os.environ.get("ANTHROPIC_API_KEY"):
         try:
             has_secret = bool(st.secrets.get("ANTHROPIC_API_KEY"))
         except Exception:
@@ -188,13 +249,15 @@ def render_sidebar():
     st.sidebar.markdown("- Product Usage")
     st.sidebar.divider()
 
-    # Reset button
-    if st.sidebar.button("🔄 New Conversation", use_container_width=True):
-        st.session_state.agent = create_agent(team=selected_team)
+    # Reset button (live mode only — demo replays have nothing to reset)
+    if mode == "Ask live questions" and st.sidebar.button(
+        "🔄 New Conversation", use_container_width=True
+    ):
+        st.session_state.pop("agent", None)
         st.session_state.messages = []
         st.rerun()
 
-    return selected_team
+    return selected_team, mode
 
 
 def render_sample_questions(team: str):
@@ -214,11 +277,69 @@ def render_sample_questions(team: str):
     return None
 
 
-def render_figures(figures: list[str]):
-    """Render Plotly figures from JSON strings."""
-    for fig_json in figures:
+def render_figures(figures: list[str], key_prefix: str = "figs"):
+    """Render Plotly figures from JSON strings.
+
+    Explicit keys prevent duplicate-element-ID errors when a transcript
+    contains two identical charts (e.g. the agent regenerated a figure
+    while correcting an error).
+    """
+    for i, fig_json in enumerate(figures):
         fig = pio.from_json(fig_json)
-        st.plotly_chart(fig, use_container_width=True)
+        st.plotly_chart(fig, use_container_width=True, key=f"{key_prefix}_{i}")
+
+
+def render_recorded_session(session: dict):
+    """Replay a recorded transcript: question, tool calls, answer, charts."""
+    with st.chat_message("user"):
+        st.markdown(session["question"])
+
+    with st.chat_message("assistant"):
+        for i, step in enumerate(session["steps"], 1):
+            if step["tool"] == "run_sql":
+                label = f"Step {i}: ran SQL"
+                code, lang = step["input"].get("query", ""), "sql"
+            else:
+                label = f"Step {i}: ran Python"
+                code, lang = step["input"].get("code", ""), "python"
+            with st.expander(label):
+                st.code(code, language=lang)
+                if step["output"]:
+                    st.markdown("**Result:**")
+                    st.markdown(step["output"])
+
+        st.markdown(session["text"])
+        render_figures(session["figures"], key_prefix=f"demo_{session['team']}_{session['question'][:40]}")
+        st.caption(
+            f"Recorded {session['recorded_at']} · {session['model']} · "
+            f"answered in {session['elapsed_s']}s · unedited transcript of a real run"
+        )
+
+
+def demo_mode(team: str):
+    """Demo mode: browse recorded real-agent sessions for the selected team."""
+    sessions = load_demo_sessions()
+    config = TEAM_CONFIG.get(team, {"icon": "📊"})
+
+    st.markdown(f"### {config['icon']} {team} Analytics — recorded sessions")
+    st.info(
+        "**You're watching recordings of real runs.** Each session below is an "
+        "unedited transcript of this agent answering the question live: the SQL it "
+        "wrote, the Python it ran, where it hit an error and corrected itself, and "
+        "the charts it produced. Switch to *Ask live questions* in the sidebar to "
+        "try your own.",
+        icon="🎬",
+    )
+
+    team_sessions = sessions.get(team, [])
+    if not team_sessions:
+        st.warning("No recorded sessions for this team yet.")
+        return
+
+    labels = [s["question"] for s in team_sessions]
+    choice = st.radio("Pick a question", labels, label_visibility="collapsed")
+    st.divider()
+    render_recorded_session(team_sessions[labels.index(choice)])
 
 
 def get_response(agent, prompt: str) -> dict:
@@ -229,7 +350,7 @@ def get_response(agent, prompt: str) -> dict:
         response = agent.ask(prompt)
 
     st.markdown(response.text)
-    render_figures(response.figures)
+    render_figures(response.figures, key_prefix="latest")
 
     elapsed = time.time() - start_time
     st.caption(f"Response time: {elapsed:.1f}s")
@@ -240,23 +361,35 @@ def get_response(agent, prompt: str) -> dict:
     }
 
 
-def main():
-    # Check for API key
+def live_mode(team: str):
+    """Live mode: visitor questions answered by the real agent, with caps."""
     api_key = _get_api_key()
     if not api_key:
         st.warning(
-            "Please enter your Anthropic API key in the sidebar to get started. "
-            "Your key stays in your browser session only — it is never stored."
+            "Live mode needs an Anthropic API key — enter one in the sidebar, or "
+            "switch to the recorded sessions, which need nothing."
         )
+        st.stop()
 
-    selected_team = render_sidebar()
-
-    # Don't proceed without API key
-    if not _get_api_key():
+    asked = st.session_state.get("live_questions_asked", 0)
+    if asked >= LIVE_QUESTIONS_PER_SESSION:
+        st.info(
+            f"You've used the {LIVE_QUESTIONS_PER_SESSION} live questions for this "
+            "visit — this demo runs on the author's API budget. The recorded "
+            "sessions in the sidebar are full transcripts of the same agent.",
+            icon="🎬",
+        )
+        st.stop()
+    if not _live_budget_left():
+        st.info(
+            "Live mode has hit its daily budget. The recorded sessions in the "
+            "sidebar show full, unedited transcripts of the same agent.",
+            icon="🎬",
+        )
         st.stop()
 
     try:
-        agent = get_or_create_agent(selected_team)
+        agent = get_or_create_agent(team)
     except Exception as e:
         error_name = type(e).__name__
         if "AuthenticationError" in error_name:
@@ -265,20 +398,27 @@ def main():
             st.error(f"Failed to initialize agent: {e}")
         st.stop()
 
+    st.caption(
+        f"Live questions left this visit: {LIVE_QUESTIONS_PER_SESSION - asked} · "
+        f"answers take 20–60s while the agent writes and runs SQL/Python"
+    )
+
     # Display chat history
-    for msg in st.session_state.get("messages", []):
+    for mi, msg in enumerate(st.session_state.get("messages", [])):
         with st.chat_message(msg["role"]):
             st.markdown(msg["content"])
             if msg.get("figures"):
-                render_figures(msg["figures"])
+                render_figures(msg["figures"], key_prefix=f"hist_{mi}")
 
     # Show sample questions if no messages yet
     prompt = None
     if not st.session_state.get("messages"):
-        prompt = render_sample_questions(selected_team)
+        prompt = render_sample_questions(team)
 
     # Chat input
-    user_input = st.chat_input("Ask a question about your data...")
+    user_input = st.chat_input(
+        "Ask a question about your data...", max_chars=LIVE_INPUT_MAX_CHARS
+    )
     prompt = prompt or user_input
 
     if prompt:
@@ -290,6 +430,10 @@ def main():
         st.session_state.messages.append({"role": "user", "content": prompt})
         with st.chat_message("user"):
             st.markdown(prompt)
+
+        # Count against caps before spending
+        st.session_state.live_questions_asked = asked + 1
+        _count_live_question()
 
         # Get agent response
         with st.chat_message("assistant"):
@@ -313,6 +457,15 @@ def main():
                 "content": result["text"],
                 "figures": result.get("figures", []),
             })
+
+
+def main():
+    selected_team, mode = render_sidebar()
+
+    if mode == "Watch recorded sessions":
+        demo_mode(selected_team)
+    else:
+        live_mode(selected_team)
 
 
 if __name__ == "__main__":

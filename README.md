@@ -1,12 +1,14 @@
 # Adaptive Analyst Agent
 
+**Live demo: [adaptive-analyst-agent.streamlit.app](https://adaptive-analyst-agent.streamlit.app)** — opens on recorded transcripts of real agent runs (instant, nothing mocked), with a live mode to ask your own questions.
+
 An AI-powered data scientist that adapts to the stakeholder asking the question. Instead of generic "chat with your data" responses, Adaptive Analyst Agent reads stakeholder profiles, domain knowledge, and analysis skills to deliver tailored, actionable insights.
 
 ## Features
 
 - **Stakeholder-aware responses** — Select a team (Executive, Marketing, Sales, Product) and the agent adapts its tone, metrics, and recommendations
 - **Interactive Plotly charts** — Trends, comparisons, and distributions rendered as interactive visualizations
-- **Streaming responses** — Token-by-token streaming with live tool execution indicators
+- **Recorded + live demo modes** — The deployed app replays unedited transcripts of real runs (every SQL query, Python execution, self-correction, and chart), and visitors can ask a few live questions with sensible usage caps
 - **Configurable context layer** — Swap markdown files to adapt for any stakeholder or domain
 - **Analysis skills** — Pre-built frameworks for funnel analysis, campaign ROI, revenue analysis, cohort retention, and more
 - **Secure execution** — Read-only database, sandboxed Python with restricted imports
