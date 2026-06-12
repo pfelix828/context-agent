@@ -1,6 +1,6 @@
 # Adaptive Analyst Agent
 
-**Live demo: [adaptive-analyst-agent.streamlit.app](https://adaptive-analyst-agent.streamlit.app)** — opens on recorded transcripts of real agent runs (instant, nothing mocked), with a live mode to ask your own questions.
+**Live demo: [adaptive-analyst-agent.vercel.app](https://adaptive-analyst-agent.vercel.app)** — unedited recordings of real agent runs: every SQL query, Python execution, self-correction, and chart. To ask your own questions, run the agent locally with your own key (see Quick Start).
 
 An AI-powered data scientist that adapts to the stakeholder asking the question. Instead of generic "chat with your data" responses, Adaptive Analyst Agent reads stakeholder profiles, domain knowledge, and analysis skills to deliver tailored, actionable insights.
 
@@ -8,7 +8,7 @@ An AI-powered data scientist that adapts to the stakeholder asking the question.
 
 - **Stakeholder-aware responses** — Select a team (Executive, Marketing, Sales, Product) and the agent adapts its tone, metrics, and recommendations
 - **Interactive Plotly charts** — Trends, comparisons, and distributions rendered as interactive visualizations
-- **Recorded + live demo modes** — The deployed app replays unedited transcripts of real runs (every SQL query, Python execution, self-correction, and chart), and visitors can ask a few live questions with sensible usage caps
+- **Recorded demo + local live mode** — The deployed app replays unedited transcripts of real runs; the included Streamlit app runs the agent live on your machine
 - **Configurable context layer** — Swap markdown files to adapt for any stakeholder or domain
 - **Analysis skills** — Pre-built frameworks for funnel analysis, campaign ROI, revenue analysis, cohort retention, and more
 - **Secure execution** — Read-only database, sandboxed Python with restricted imports

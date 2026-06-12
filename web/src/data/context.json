@@ -1,0 +1,232 @@
+{
+ "stakeholders": [
+  {
+   "team": "Executive",
+   "mission": "Set company-level strategy and drive profitable growth by aligning sales, marketing, product, and customer success around shared targets.",
+   "cares_about": [
+    "ARR and ARR growth rate",
+    "Bookings vs plan (new business + expansion)",
+    "Net revenue retention (NRR)",
+    "LTV/CAC ratio by segment",
+    "Pipeline coverage ratio vs quarterly target",
+    "Gross margin and unit economics",
+    "Revenue mix by segment and product line",
+    "Customer count and logo churn"
+   ],
+   "communication": [
+    "Lead with the headline number and whether we're on/off plan",
+    "Always compare to plan, prior period, and prior year",
+    "Use precise financial figures \u2014 round but don't obscure",
+    "Board-level summaries: 2-3 key takeaways, not 20 metrics",
+    "Trends over snapshots \u2014 show the trajectory",
+    "Flag risks early and quantify the gap",
+    "Include both leading indicators (pipeline) and lagging indicators (bookings)",
+    "Charts for trends, tables for financial summaries"
+   ],
+   "usage": [
+    "Monthly board reporting with QoQ and YoY comparisons",
+    "Quarterly strategic planning and budget allocation",
+    "Weekly leadership reviews focused on bookings pace and pipeline",
+    "Ad-hoc deep dives when metrics are off-track"
+   ]
+  },
+  {
+   "team": "Marketing",
+   "mission": "Drive pipeline generation and brand awareness through campaigns, content, and demand generation programs.",
+   "cares_about": [
+    "Pipeline contribution by channel and campaign",
+    "MQL volume and MQL-to-SQL conversion rates",
+    "Campaign ROI and attribution (first-touch and multi-touch)",
+    "CAC by segment and channel",
+    "Lead quality and scoring effectiveness",
+    "Budget efficiency \u2014 where to spend more, where to cut"
+   ],
+   "communication": [
+    "Lead with pipeline impact and revenue contribution",
+    "Show campaign-level performance with clear winners and losers",
+    "Use business language \u2014 avoid technical jargon",
+    "Always include a recommendation: what to do next",
+    "Prefer tables and charts over raw numbers",
+    "Round dollar figures for readability ($1.2M not $1,203,847)"
+   ],
+   "usage": [
+    "Weekly pipeline reviews with leadership",
+    "Campaign performance dashboards reviewed daily",
+    "Monthly budget reallocation decisions",
+    "Quarterly planning for channel mix and spend targets"
+   ]
+  },
+  {
+   "team": "Sales",
+   "mission": "Close revenue by converting qualified leads into customers and expanding existing accounts.",
+   "cares_about": [
+    "Pipeline coverage vs. quarterly target",
+    "Win rate by segment, rep, and deal size",
+    "Sales cycle length and stage velocity",
+    "Deal size trends and average contract value",
+    "SQL quality \u2014 are marketing leads actually closeable?",
+    "Forecast accuracy \u2014 will we hit our number?",
+    "Rep performance and quota attainment"
+   ],
+   "communication": [
+    "Lead with pipeline health and forecast \u2014 \"are we going to hit our number?\"",
+    "Show deal-level detail when relevant (top deals, at-risk deals)",
+    "Frame everything in terms of bookings and revenue impact",
+    "Be direct about risks \u2014 don't sugarcoat a bad pipeline",
+    "Include stage-by-stage breakdowns with conversion rates",
+    "Compare current quarter to prior quarter and to target"
+   ],
+   "usage": [
+    "Daily pipeline reviews and deal inspections",
+    "Weekly forecast calls with leadership",
+    "Monthly pipeline generation analysis with marketing",
+    "Quarterly territory and quota planning"
+   ]
+  },
+  {
+   "team": "Product",
+   "mission": "Build and improve the product based on user behavior, adoption patterns, and engagement data to drive retention and expansion.",
+   "cares_about": [
+    "Daily/weekly/monthly active users (DAU/WAU/MAU)",
+    "Feature adoption rates and usage depth",
+    "Product usage by segment (SMB vs. Mid-Market vs. Enterprise)",
+    "Correlation between product engagement and conversion/retention",
+    "API usage patterns and platform extensibility",
+    "Storage consumption and infrastructure implications",
+    "User activation and onboarding completion rates"
+   ],
+   "communication": [
+    "Lead with user behavior patterns and trends",
+    "Show engagement metrics over time \u2014 trends matter more than snapshots",
+    "Break down by segment to understand who's using what",
+    "Connect product usage to business outcomes (retention, expansion, conversion)",
+    "Include statistical context \u2014 is a change significant or noise?",
+    "Use precise numbers for user counts and engagement metrics",
+    "Visualizations preferred for trend data"
+   ],
+   "usage": [
+    "Weekly product review with usage dashboards",
+    "Feature launch retrospectives measuring adoption",
+    "Quarterly roadmap planning informed by usage trends",
+    "Ad-hoc deep dives into specific features or user segments"
+   ]
+  }
+ ],
+ "skills": [
+  {
+   "name": "Campaign ROI Analysis",
+   "description": "Evaluates campaign performance by comparing spend against pipeline generated and revenue closed. Uses first-touch and multi-touch attribution to assign credit.",
+   "when": [
+    "\"Which campaigns are performing best?\"",
+    "\"What's the ROI on our paid search spend?\"",
+    "\"Where should we allocate budget next quarter?\"",
+    "Any question about campaign effectiveness or spend efficiency"
+   ],
+   "steps": [
+    "Join campaigns to leads via bridge_campaign_leads",
+    "Trace leads through to opportunities and closed-won deals",
+    "Calculate pipeline generated and revenue attributed per campaign",
+    "Compute ROI: (attributed revenue - spend) / spend",
+    "Compute CAC: spend / customers acquired",
+    "Rank campaigns by ROI and pipeline contribution",
+    "Compare first-touch vs multi-touch attribution if relevant"
+   ]
+  },
+  {
+   "name": "Cohort Retention Analysis",
+   "description": "Analyzes customer cohorts by signup month and tracks product usage retention curves over time. Identifies engagement trends and highlights cohorts with strong or weak retention.",
+   "when": [
+    "\"Show me retention by cohort\"",
+    "\"How is user engagement trending?\"",
+    "\"Which cohorts have the best retention?\"",
+    "\"What does our retention curve look like?\"",
+    "Any question about cohort behavior, engagement trends, or usage over time"
+   ],
+   "steps": [
+    "Define cohorts by account created_at month (from dim_accounts where is_customer = true)",
+    "For each cohort, track monthly product usage (fct_product_usage) relative to their start month",
+    "Calculate retention rate: % of accounts in each cohort that are active in month N vs month 0",
+    "Define \"active\" as having any product usage record in the month",
+    "Build a retention matrix (cohort \u00d7 month offset)",
+    "Calculate average retention curve across all cohorts",
+    "Identify best and worst performing cohorts",
+    "Look for trends \u2014 are newer cohorts retaining better or worse?"
+   ]
+  },
+  {
+   "name": "Funnel Analysis",
+   "description": "Analyzes conversion rates across the lead-to-revenue funnel (Lead \u2192 MQL \u2192 SQL \u2192 Opportunity \u2192 Closed Won). Identifies where drop-off is highest and which segments or channels convert best.",
+   "when": [
+    "\"How is the funnel performing?\"",
+    "\"Where are we losing leads?\"",
+    "\"What's our MQL-to-SQL conversion rate?\"",
+    "Any question about stage-to-stage conversion"
+   ],
+   "steps": [
+    "Count leads at each funnel stage for the requested time period",
+    "Calculate stage-to-stage conversion rates",
+    "Break down by segment, channel, or campaign if requested",
+    "Compare to prior period",
+    "Identify the stage with the largest drop-off",
+    "Recommend where to focus improvement efforts"
+   ]
+  },
+  {
+   "name": "Pipeline Forecast",
+   "description": "Assesses current pipeline coverage against quarterly targets and forecasts likely bookings based on historical win rates and stage distribution.",
+   "when": [
+    "\"Are we going to hit our number?\"",
+    "\"What does pipeline coverage look like?\"",
+    "\"How much pipeline do we need to generate?\"",
+    "Any question about forecast or pipeline health"
+   ],
+   "steps": [
+    "Sum open pipeline by stage",
+    "Apply historical stage-specific win rates to estimate weighted pipeline",
+    "Compare weighted pipeline to quarterly target",
+    "Calculate pipeline coverage ratio (weighted pipeline / target)",
+    "Estimate gap: target - weighted pipeline",
+    "Calculate required lead generation to fill the gap (using historical conversion rates)"
+   ]
+  },
+  {
+   "name": "Revenue Analysis",
+   "description": "Analyzes revenue composition, bookings trends, unit economics (CAC, LTV/CAC), and ARR breakdown by segment. Designed for executive-level financial reviews.",
+   "when": [
+    "\"What's our ARR?\"",
+    "\"How are bookings trending?\"",
+    "\"What's our CAC by segment?\"",
+    "\"Show me unit economics\"",
+    "\"Revenue breakdown by segment\"",
+    "Any question about ARR, bookings, LTV, or CAC"
+   ],
+   "steps": [
+    "Calculate total ARR from active customers (dim_accounts where is_customer = true)",
+    "Break down ARR by segment (SMB, Mid-Market, Enterprise)",
+    "Calculate bookings from closed-won opportunities in the requested period",
+    "Compare bookings to prior period",
+    "Calculate CAC: total campaign spend / new customers acquired",
+    "Estimate LTV using ARR and segment-level retention assumptions",
+    "Compute LTV/CAC ratio by segment",
+    "Identify the highest-growth and most efficient segments"
+   ]
+  },
+  {
+   "name": "Segment Analysis",
+   "description": "Breaks down key metrics by customer segment (SMB, Mid-Market, Enterprise) to identify where the business is winning and where there are gaps.",
+   "when": [
+    "\"How do segments compare?\"",
+    "\"Which segment has the best win rate?\"",
+    "\"Where should sales focus?\"",
+    "Any question that benefits from a segment-level view"
+   ],
+   "steps": [
+    "Group accounts by segment using employee_count thresholds",
+    "Calculate key metrics per segment: lead volume, MQL rate, SQL rate, pipeline, win rate, average deal size, ARR",
+    "Compare segment performance against targets or prior period",
+    "Identify over/under-performing segments",
+    "Cross-reference with product usage if relevant"
+   ]
+  }
+ ]
+}

@@ -1,0 +1,90 @@
+[
+ {
+  "file": "executive_1.json",
+  "team": "Executive",
+  "question": "What's our current ARR and how is it trending?",
+  "n_steps": 6,
+  "n_errors": 1,
+  "n_figures": 3,
+  "elapsed_s": 39.0,
+  "model": "claude-sonnet-4-6",
+  "recorded_at": "2026-06-11"
+ },
+ {
+  "file": "executive_2.json",
+  "team": "Executive",
+  "question": "How does our revenue break down by segment?",
+  "n_steps": 7,
+  "n_errors": 2,
+  "n_figures": 1,
+  "elapsed_s": 33.5,
+  "model": "claude-sonnet-4-6",
+  "recorded_at": "2026-06-11"
+ },
+ {
+  "file": "marketing_1.json",
+  "team": "Marketing",
+  "question": "How is the funnel performing this quarter?",
+  "n_steps": 8,
+  "n_errors": 1,
+  "n_figures": 2,
+  "elapsed_s": 56.1,
+  "model": "claude-sonnet-4-6",
+  "recorded_at": "2026-06-11"
+ },
+ {
+  "file": "marketing_2.json",
+  "team": "Marketing",
+  "question": "Which campaigns should I cut and which should I double down on?",
+  "n_steps": 7,
+  "n_errors": 2,
+  "n_figures": 1,
+  "elapsed_s": 96.0,
+  "model": "claude-sonnet-4-6",
+  "recorded_at": "2026-06-11"
+ },
+ {
+  "file": "sales_1.json",
+  "team": "Sales",
+  "question": "How do win rates compare across segments?",
+  "n_steps": 2,
+  "n_errors": 0,
+  "n_figures": 1,
+  "elapsed_s": 17.3,
+  "model": "claude-sonnet-4-6",
+  "recorded_at": "2026-06-11"
+ },
+ {
+  "file": "sales_2.json",
+  "team": "Sales",
+  "question": "Show me the largest open opportunities and their stages.",
+  "n_steps": 1,
+  "n_errors": 0,
+  "n_figures": 0,
+  "elapsed_s": 20.6,
+  "model": "claude-sonnet-4-6",
+  "recorded_at": "2026-06-11"
+ },
+ {
+  "file": "product_1.json",
+  "team": "Product",
+  "question": "What are our DAU trends over the last 6 months?",
+  "n_steps": 9,
+  "n_errors": 2,
+  "n_figures": 5,
+  "elapsed_s": 63.4,
+  "model": "claude-sonnet-4-6",
+  "recorded_at": "2026-06-11"
+ },
+ {
+  "file": "product_2.json",
+  "team": "Product",
+  "question": "How does product usage compare across SMB, Mid-Market, and Enterprise?",
+  "n_steps": 8,
+  "n_errors": 2,
+  "n_figures": 7,
+  "elapsed_s": 70.4,
+  "model": "claude-sonnet-4-6",
+  "recorded_at": "2026-06-11"
+ }
+]

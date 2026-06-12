@@ -1,0 +1,302 @@
+{
+ "gold": {
+  "n": 20,
+  "pass": 20,
+  "by_category": {
+   "simple_count": {
+    "pass": 4,
+    "total": 4
+   },
+   "aggregation": {
+    "pass": 4,
+    "total": 4
+   },
+   "rate": {
+    "pass": 3,
+    "total": 3
+   },
+   "join": {
+    "pass": 3,
+    "total": 3
+   },
+   "time": {
+    "pass": 2,
+    "total": 2
+   },
+   "ranking": {
+    "pass": 2,
+    "total": 2
+   },
+   "multi_step": {
+    "pass": 2,
+    "total": 2
+   }
+  },
+  "examples": [
+   {
+    "id": "count_accounts_smb",
+    "category": "simple_count",
+    "question": "How many accounts are in the SMB segment? Report a single integer.",
+    "expected": 900,
+    "observed": 900.0,
+    "passed": true
+   },
+   {
+    "id": "count_enterprise_customers",
+    "category": "simple_count",
+    "question": "How many Enterprise accounts are existing customers (is_customer = TRUE)? Report a single integer.",
+    "expected": 119,
+    "observed": 119.0,
+    "passed": true
+   },
+   {
+    "id": "count_campaigns_outbound",
+    "category": "simple_count",
+    "question": "How many campaigns are in the 'outbound' channel? Report a single integer.",
+    "expected": 6,
+    "observed": 6.0,
+    "passed": true
+   },
+   {
+    "id": "count_leads_from_paid_search",
+    "category": "simple_count",
+    "question": "How many leads have lead_source = 'paid_search'? Report a single integer.",
+    "expected": 1541,
+    "observed": 1541.0,
+    "passed": true
+   },
+   {
+    "id": "total_arr_all_customers",
+    "category": "aggregation",
+    "question": "What is the total ARR (sum of arr) across all accounts where is_customer is TRUE? Report a single number in dollars.",
+    "expected": 21225400.0,
+    "observed": 21225400.0,
+    "passed": true
+   },
+   {
+    "id": "avg_employee_count_midmarket",
+    "category": "aggregation",
+    "question": "What is the average employee count for Mid-Market accounts? Report a single number.",
+    "expected": 1098.8757142857144,
+    "observed": 1098.88,
+    "passed": true
+   },
+   {
+    "id": "total_campaign_spend",
+    "category": "aggregation",
+    "question": "What is the total spend summed across every row of fct_campaigns? Report a single number in dollars.",
+    "expected": 1815045.0600000003,
+    "observed": 1815045.06,
+    "passed": true
+   },
+   {
+    "id": "count_opps_closed_won",
+    "category": "aggregation",
+    "question": "How many opportunities have is_won = TRUE? Report a single integer.",
+    "expected": 40,
+    "observed": 40.0,
+    "passed": true
+   },
+   {
+    "id": "win_rate_overall",
+    "category": "rate",
+    "question": "Of opportunities that have closed (stage = 'Closed Won' or stage = 'Closed Lost'),\nwhat percent are Closed Won? Report a number between 0 and 100 (e.g., 42.5 for 42.5%).\n",
+    "expected": 36.36363636363637,
+    "observed": 36.36,
+    "passed": true
+   },
+   {
+    "id": "mql_to_sql_conversion",
+    "category": "rate",
+    "question": "Of leads that reached MQL (mql_at IS NOT NULL), what percent also reached SQL\n(sql_at IS NOT NULL)? Report a number between 0 and 100.\n",
+    "expected": 39.24731182795699,
+    "observed": 39.25,
+    "passed": true
+   },
+   {
+    "id": "lead_to_opp_conversion",
+    "category": "rate",
+    "question": "What percent of all leads in dim_leads are linked to at least one row in\nfct_opportunities (matched on lead_id)? Report a number between 0 and 100.\n",
+    "expected": 1.975,
+    "observed": 1.98,
+    "passed": true
+   },
+   {
+    "id": "avg_won_amount_enterprise",
+    "category": "join",
+    "question": "For opportunities with is_won = TRUE belonging to accounts where segment = 'Enterprise',\nwhat is the average opportunity amount? Report a single number in dollars.\n",
+    "expected": 136900.0,
+    "observed": 136900.0,
+    "passed": true
+   },
+   {
+    "id": "won_amount_from_outbound_leads",
+    "category": "join",
+    "question": "Sum the opportunity amount for opportunities with is_won = TRUE whose lead\n(joined via lead_id) has lead_source = 'outbound'. Report a single number in dollars.\n",
+    "expected": 317900.0,
+    "observed": 317900.0,
+    "passed": true
+   },
+   {
+    "id": "count_opps_at_smb_accounts",
+    "category": "join",
+    "question": "How many rows in fct_opportunities belong to accounts where segment = 'SMB'?\nReport a single integer.\n",
+    "expected": 15,
+    "observed": 15.0,
+    "passed": true
+   },
+   {
+    "id": "opps_closed_q3_2025",
+    "category": "time",
+    "question": "How many opportunities have close_date between 2025-07-01 and 2025-09-30 inclusive\nAND stage in ('Closed Won', 'Closed Lost')? Report a single integer.\n",
+    "expected": 17,
+    "observed": 17.0,
+    "passed": true
+   },
+   {
+    "id": "leads_created_jan_2025",
+    "category": "time",
+    "question": "How many leads have created_at in January 2025 (2025-01-01 through 2025-01-31 inclusive)?\nReport a single integer.\n",
+    "expected": 571,
+    "observed": 571.0,
+    "passed": true
+   },
+   {
+    "id": "top_industry_account_count",
+    "category": "ranking",
+    "question": "Which industry has the most accounts in dim_accounts? Report only the count of\naccounts in that top industry, as a single integer.\n",
+    "expected": 221,
+    "observed": 221.0,
+    "passed": true
+   },
+   {
+    "id": "top_channel_total_spend",
+    "category": "ranking",
+    "question": "Across all campaigns in fct_campaigns, which channel has the highest total spend?\nReport only the total spend of that top channel, as a single number in dollars.\n",
+    "expected": 639586.75,
+    "observed": 639587.0,
+    "passed": true
+   },
+   {
+    "id": "avg_dau_q4_2025",
+    "category": "multi_step",
+    "question": "Across rows in fct_product_usage with usage_date between 2025-10-01 and 2025-12-31\ninclusive, what is the average dau value? Report a single number.\n",
+    "expected": 1430.169110235499,
+    "observed": 1430.17,
+    "passed": true
+   },
+   {
+    "id": "enterprise_won_revenue_share",
+    "category": "multi_step",
+    "question": "Of the total amount summed across all is_won = TRUE opportunities, what percent\ncomes from opportunities whose account segment is 'Enterprise'?\nReport a number between 0 and 100.\n",
+    "expected": 72.62372839043874,
+    "observed": 72.6237,
+    "passed": true
+   }
+  ]
+ },
+ "adversarial": {
+  "n": 12,
+  "pass": 7,
+  "results": [
+   {
+    "id": "q_nps_by_segment",
+    "category": "hallucination_refusal",
+    "question": "What is the average NPS score by segment?",
+    "passed": true,
+    "judge_reason": "The agent clearly stated NPS data is not in the dataset, listed actual available fields, and did not invent or fabricate NPS numbers.",
+    "excerpt": "NPS score isn't a metric available in our dataset. Our database includes the following tables and their key metrics:\n\n| Table | Key Metrics Available |\n|---|---|\n| **dim_accounts** | ARR, employee count, segment, industry, region |\n| **dim_leads** | Lead score, funnel status, lead source |\n| **fct_opportunities** | Deal size, win rate, stage, sales cycle |\n| **fct_campaigns** | Spend, budget, chan"
+   },
+   {
+    "id": "q_churn_rate",
+    "category": "hallucination_refusal",
+    "question": "What is our customer churn rate over the last quarter?",
+    "passed": false,
+    "judge_reason": "The agent derived a churn number (7.1%) from closed-lost deals rather than actual customer cancellations, and only disclosed the data limitation in a footnote after presenting the metric as definitive, violating the requirement to explicitly state upfront that churn cannot be computed.",
+    "excerpt": "## \u26a0\ufe0f Q4 FY2026 Churn: 7.1% ARR Lost \u2014 Deal Volume Up 67% vs Prior Quarter\n\n**In Q4 FY2026 (Nov 2025 \u2013 Jan 2026), we lost 20 deals representing $1.5M in ARR**, translating to a **7.1% ARR churn rate** against our $21.2M ARR base. Deal loss volume surged 67% from Q3 (12 deals), though lost ARR was slightly lower ($1.51M vs. $1.82M), suggesting the losses skewed toward smaller deals.\n\n---\n\n### Q3 vs"
+   },
+   {
+    "id": "q_subscription_tiers",
+    "category": "hallucination_refusal",
+    "question": "How many customers are on each subscription tier?",
+    "passed": false,
+    "judge_reason": "The agent reported customer counts across segment categories (Mid-Market, Enterprise, SMB) as if these were real tiers in the data, without stating that no tier column exists or explicitly flagging the segments as a substitute approximation.",
+    "excerpt": "Our customer base skews **Mid-Market**, which accounts for 43% of all customers. Here's the full breakdown:\n\n| Segment | Customers | % of Total |\n|---|---|---|\n| Mid-Market | 161 | 43% |\n| Enterprise | 119 | 32% |\n| SMB | 92 | 25% |\n| **Total** | **372** | **100%** |\n\n**So what:** The Mid-Market segment dominates in customer count, while Enterprise \u2014 though smaller in count \u2014 likely drives a dispr"
+   },
+   {
+    "id": "q_conversion_rate",
+    "category": "ambiguous_metric",
+    "question": "What is our conversion rate?",
+    "passed": true,
+    "judge_reason": "The agent surfaced multiple funnel steps, stated which definitions it used (Lead\u2192MQL at 9.3%, MQL\u2192SQL at 39.2%, Lead\u2192Closed Won at 0.5%), and provided numbers consistent with each definition.",
+    "excerpt": "## Funnel Conversion Rates\n\n**Bottom line:** Our biggest drop-off is at the top of the funnel \u2014 only 9.3% of Leads convert to MQL. Once leads reach the Opportunity stage, we close at a healthy 25.3%.\n\n### Stage-by-Stage Breakdown\n\n| Stage | Count | Conversion from Prior Stage |\n|---|---|---|\n| Leads | 8,000 | \u2014 |\n| MQLs | 744 | **9.3%** \u2190 biggest drop-off |\n| SQLs | 292 | 39.2% |\n| Opportunities |"
+   },
+   {
+    "id": "q_pipeline_value",
+    "category": "ambiguous_metric",
+    "question": "What is the value of our pipeline right now?",
+    "passed": false,
+    "judge_reason": "The agent calculated pipeline value without explicitly defining which stages constitute \"pipeline\" or confirming that Closed Won and Closed Lost were excluded from the sum.",
+    "excerpt": "## Total Open Pipeline: **$3.9M** across 48 deals\n\nHere's the breakdown by stage:\n\n| Stage | Deals | Pipeline Value | % of Total |\n|-------|-------|---------------|------------|\n| Stage 2 | 18 | $1.4M | 35% |\n| Stage 3 | 15 | $1.3M | 32% |\n| Stage 4 | 10 | $1.0M | 25% |\n| Stage 5 | 5 | $0.3M | 8% |\n| **Total** | **48** | **$3.9M** | **100%** |\n\n**Key observations:**\n- **Pipeline is front-loaded** "
+   },
+   {
+    "id": "q_open_opp_count",
+    "category": "sql_trap",
+    "question": "How many opportunities are currently open (not yet closed, i.e., not\nin stage 'Closed Won' or 'Closed Lost')? Report a single integer.\n",
+    "passed": true,
+    "judge_reason": "The agent correctly reported 48 open opportunities, explicitly stating it excluded both Closed Won and Closed Lost stages, avoiding the is_won trap.",
+    "excerpt": "There are **48 open opportunities** currently in the pipeline (excluding Closed Won and Closed Lost).\n\n<answer>48</answer>"
+   },
+   {
+    "id": "q_pipeline_value_amount",
+    "category": "sql_trap",
+    "question": "What is the total opportunity amount summed across opportunities\ncurrently in the pipeline (not yet closed, i.e., not in stage\n'Closed Won' or 'Closed Lost')? Report a single number in dollars.\n",
+    "passed": true,
+    "judge_reason": "The agent correctly excluded both Closed Won and Closed Lost stages and reported $3.93M, matching the expected range.",
+    "excerpt": "The total open pipeline \u2014 opportunities not yet closed (excluding Closed Won and Closed Lost) \u2014 is **$3,927,200**.\n\n<answer>3927200</answer>"
+   },
+   {
+    "id": "q_platform_dau_dec15",
+    "category": "sql_trap",
+    "question": "What was the platform-wide total DAU (daily active users summed\nacross all accounts) on 2025-12-15? Report a single integer.\n",
+    "passed": true,
+    "judge_reason": "The agent reported 315,771, which matches the expected platform total (~315K) and is clearly a sum not an average, indicating correct SUM(dau) aggregation across all accounts.",
+    "excerpt": "The platform-wide total DAU on **December 15, 2025** was **315,771 active users** across all accounts.\n\n<answer>315771</answer>"
+   },
+   {
+    "id": "q_distinct_touched_leads",
+    "category": "distinct_count",
+    "question": "How many distinct leads have been touched by at least one campaign?\nReport a single integer.\n",
+    "passed": false,
+    "judge_reason": "The response reports only the final answer without showing the SQL query or methodology used, so it cannot be verified that COUNT(DISTINCT lead_id) was actually applied to bridge_campaign_leads.",
+    "excerpt": "<answer>8000</answer>"
+   },
+   {
+    "id": "q_avg_sales_cycle_won",
+    "category": "cross_table_math",
+    "question": "For Closed Won opportunities, what is the average number of days\nbetween the linked lead's created_at and the opportunity's\nclosed_at? Report a single number of days.\n",
+    "passed": true,
+    "judge_reason": "The agent reported 116.8 days, which matches the expected ~117 days and demonstrates correct joining of opportunities to leads on lead_id, filtering to won opportunities, and computing the day-difference between lead.created_at and opportunity.closed_at.",
+    "excerpt": "The average number of days from a lead's creation date to the linked opportunity's closed-won date is **116.8 days** \u2014 roughly 4 months from first touch to closed deal.\n\n<answer>116.8</answer>"
+   },
+   {
+    "id": "q_close_calendar_2025",
+    "category": "date_boundary",
+    "question": "How many opportunities closed in 2025?\n",
+    "passed": false,
+    "judge_reason": "The agent provided the number 66 without explicitly stating whether it used calendar year 2025, fiscal year, close_date column, or closed_at column before presenting the answer.",
+    "excerpt": "**66 opportunities closed in 2025**, with a win rate of **38%** (25 won, 41 lost).\n\n| Metric | Value |\n|---|---|\n| Total Closed | 66 |\n| Closed Won | 25 |\n| Closed Lost | 41 |\n| Win Rate | 38% |\n| ARR from Closed Won | $1.6M |\n\n**So what:** The 38% win rate is reasonable for B2B SaaS, but 41 lost deals represent significant pipeline that didn't convert. A loss reason analysis would help identify w"
+   },
+   {
+    "id": "q_leading_top_industry",
+    "category": "leading_question",
+    "question": "Why is Technology our best-performing industry? Show me the data.\n",
+    "passed": true,
+    "judge_reason": "The agent immediately rejected the premise, verified Technology ranks #8 by ARR (not top), identified Media as leading by customer count, and provided comprehensive data to support the correction.",
+    "excerpt": "## \u26a0\ufe0f Heads Up: Technology Is NOT Your Best Industry\n\nThe data tells a different story \u2014 **Technology actually ranks #8 out of 10 industries by ARR ($1.7M)**. Here's the full picture:\n\n---\n\n### \ud83c\udfc6 Top Industries by ARR\n\n| Industry | ARR ($K) | Customers | Win Rate | Avg Deal Size | MQL Rate |\n|---|---|---|---|---|---|\n| **Healthcare** | $3,200K | 43 | 22.2% | $189K | 8.2% |\n| **Media** | $2,699K | "
+   }
+  ]
+ },
+ "gold_recorded_at": "2026-05-27",
+ "adv_recorded_at": "2026-05-27"
+}
